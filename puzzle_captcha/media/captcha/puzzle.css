@@ -1,0 +1,16 @@
+.puzzle {
+    padding-left: 0px;
+}
+
+.piece {
+    float: left;
+    list-style: none;
+}
+
+.puzzle .piece img {
+    border: thin solid white;
+}
+
+.puzzle img:hover {
+    border: thin solid blue;
+}

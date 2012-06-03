@@ -1,5 +1,3 @@
-import simplejson
-
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.forms import fields, ValidationError
@@ -9,20 +7,20 @@ from puzzle_captcha.widgets import PuzzleCaptchaInput
 
 class PuzzleCaptchaField(fields.Field):
     widget = PuzzleCaptchaInput
-    
-    def clean(self, value):
+    default_error_messages = {
+        'invalid': _('You did not get the puzzle right.'),
+    }
+
+    def to_python(self, value):
+        return value.split(',')
+
+    def validate(self, values):
         try:
-            values = simplejson.loads(value)
-            print values
-            puzzle = Puzzle.objects.get(key=values['puzzle_key'])
-            looper = 1
-            for piece in puzzle.puzzlepiece_set.all():
-                print "%s: %s = %s" % (piece.key, looper, values[piece.key])
-                if values[piece.key] != str(looper):
-                    raise ValidationError(_('You did not get the puzzle right.'))
-                    break
-                looper += 1
+            puzzle = Puzzle.objects.get(key=values[0])
+            pieces = dict(puzzle.puzzlepiece_set.values_list('key', 'order'))
+            for order,key in enumerate(values[1:]):
+                if pieces[key] != order+1:
+                    raise ValidationError(self.default_error_messages['invalid'])
             return True
-            
         except Puzzle.DoesNotExist:
-            raise ValidationError(_('You did not get the puzzle right.'))
+            raise ValidationError(self.default_error_messages['invalid'])

@@ -1,0 +1,13 @@
+{% load filetransfers %}
+<input type="hidden" id="puzzle_key" name="puzzle_key" value="{{ puzzle.key }}" />
+<ul class="puzzle" style="width:{{width}}px;">
+{% for piece in puzzle.get_random_pieces %}
+{% url puzzle-piece piece.pk as fallback_url %}
+    <li class="piece">
+        <img src="{% firstof piece.image|public_download_url fallback_url %}" />
+        <input type="hidden" name="{{ piece.key }}" />
+    </li>
+{% endfor %}
+</ul>
+
+<input type="hidden" name="{{ name }}" id="puzzle_captcha_output" />

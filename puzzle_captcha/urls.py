@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('puzzle_captcha.views',
-    (r'^$', 'render_puzzle'),
+    url(r'download/(?P<pk>.+)$', 'download_handler', name='puzzle-piece'),
 )
